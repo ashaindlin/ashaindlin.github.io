@@ -1,0 +1,149 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>MyPy Tutorial, Part 1 | λ</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/very-simple.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"></head><body><!-- include the sidebar--><!-- include ./includes/sidebar.jade--><!-- Blog title and subtitle--><header><div class="container header"><a id="logo" href="/." class="title">λ</a><span class="subtitle">PL Researcher. Evil Feminist. Ocean Monster.</span><label id="toggle-menu" for="menu" onclick><i class="fa fa-bars"></i></label></div></header><!-- use checkbox hack for toggle nav-bar on small screens--><input id="menu" type="checkbox"><!-- Navigation Links--><nav id="nav"><div class="container"><a href="/about" class="sidebar-nav-item">About</a><a href="/" class="sidebar-nav-item active">Blog</a><a href="/contact" class="sidebar-nav-item">Contact</a><a href="/music" class="sidebar-nav-item">Music I Like</a><a href="/projects" class="sidebar-nav-item">Projects</a></div></nav><div id="header-margin-bar"></div><!-- gallery that comes before the header--><div class="wrapper"><div class="container post-header"><h1>MyPy Tutorial, Part 1</h1></div></div><div class="wrapper"><div class="container meta"><div class="post-time">2016-02-26</div><div class="post-tags"><a class="post-tag-link" href="/tags/mypy/">mypy</a>/<a class="post-tag-link" href="/tags/python/">python</a>/<a class="post-tag-link" href="/tags/tutorial/">tutorial</a>/<a class="post-tag-link" href="/tags/types/">types</a></div></div></div><article><div class="container post"><p>I&#x2019;ve had to write a lot of Python code in the past few months, and I found
+myself missing the comfort of static types. Enter MyPy, a standalone typechecker
+which uses a bunch of the new features in Python 3 to make the language more
+friendly to us type-lovers.</p>
+<p>Let&#x2019;s jump right in!</p>
+<p>You will need:</p>
+<ul>
+<li>A text editor and a Unix command prompt</li>
+<li>Familiarity with some basic programming concepts: functions, writing output,
+and getting input</li>
+<li>Python 3.5 (in Part 2 of the tutorial, we&#x2019;ll be using the <code>typing</code> module,
+which is new in 3.5)</li>
+<li>A desire to catch more bugs earlier in the development process!</li>
+</ul>
+<p>This tutorial is aimed at people with some programming experience but little to
+no experience with static typing, including but not limited to: first- and
+second-year college students, self-taught/hobbyist programmers (welcome,
+GirlDevelopIt members!), and students in online programs like Udacity.</p>
+<!-- toc -->
+<ul>
+<li><a href="#installing-mypy">Installing MyPy</a></li>
+<li><a href="#getting-started">Getting Started</a><ul>
+<li><a href="#making-mistakes">Making Mistakes</a></li>
+<li><a href="#a-slightly-better-example">A Slightly Better Example</a></li>
+</ul>
+</li>
+<li><a href="#digging-deeper">Digging Deeper</a></li>
+</ul>
+<!-- tocstop -->
+<h1 id="installing-mypy"><a href="#Installing-MyPy" class="headerlink" title="Installing MyPy"></a>Installing MyPy</h1><p>MyPy might be available through your Linux distribution&#x2019;s package manager. If it
+is, I recommend grabbing it from there (it&#x2019;s what I do). If not, you&#x2019;ll need to
+download it yourself, as follows.</p>
+<p>If you have some experience using Python libraries, you might be used to getting
+them directly from PYPI; unfortunately, as of this writing, the version of MyPy
+on PYPI isn&#x2019;t compatible with Python 3.5. To get around this, we&#x2019;ll install
+directly from the MyPy git repository:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip3 install git+git://github.com/python/mypy.git</span><br></pre></td></tr></table></figure>
+<h1 id="getting-started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h1><p>First, let&#x2019;s make sure your tools are set up correctly. Try saving this code in
+a file named &#x201C;hello1.py&#x201D; and running it with <code>python3.5 hello1.py</code>:</p>
+<figure class="highlight python"><figcaption><span>hello1.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_message</span><span class="params">()</span> -&gt; <span class="title">str</span>:</span></span><br><span class="line">    <span class="keyword">return</span> input(<span class="string">&apos;Type something:&apos;</span>)</span><br><span class="line"></span><br><span class="line">s = get_message()</span><br><span class="line">print(s)</span><br></pre></td></tr></table></figure>
+<p>It should prompt you to enter some text, print what you typed, and then exit.</p>
+<p>The only part of this code that&#x2019;s different from &#x201C;normal&#x201D; Python is the type
+annotation on the get_message function. Where <code>def get_message()</code> means
+&#x201C;get_message is a function&#x201D;, <code>def get_message() -&gt; str</code> means &#x201C;get_message is a
+function that returns a string&#x201D;.</p>
+<p>The type annotation serves two purposes: to make it easier for other humans to
+read your code, and to enable MyPy to detect errors in your code before you run
+it. (Actually, MyPy could typecheck this without an annotation, but we&#x2019;ll get to
+that later.)</p>
+<p>To see MyPy in action, try typechecking the code with <code>mypy hello1.py</code>. Like many
+Linux programs, MyPy will print nothing when it runs successfully; since there
+aren&#x2019;t any mismatched types in this code, you shouldn&#x2019;t see any output after
+running the command.</p>
+<p>Congratulations, you&#x2019;ve just typechecked a Python program for the first time!</p>
+<h2 id="making-mistakes"><a href="#Making-Mistakes" class="headerlink" title="Making Mistakes"></a>Making Mistakes</h2><p>Okay, so that was a little bit anticlimactic. You wrote those extra seven
+characters to give the get_message function a type, and nothing even happened!
+Let&#x2019;s see where MyPy really shines: when your code <em>isn&#x2019;t</em> right.</p>
+<p>Make a new copy of your file. Now edit it to claim that get_message returns an
+integer, by changing <code>str</code> to <code>int</code> on the first line.  Your code should look
+like this now:</p>
+<figure class="highlight python"><figcaption><span>hello2.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_message</span><span class="params">()</span> -&gt; <span class="title">int</span>:</span></span><br><span class="line">    <span class="keyword">return</span> input(<span class="string">&apos;Type something:&apos;</span>)</span><br><span class="line"></span><br><span class="line">s = get_message()</span><br><span class="line">print(s)</span><br></pre></td></tr></table></figure>
+<p>Before running it, try checking it with MyPy. You should get an error message
+indicating the line number and saying something like &#x201C;Incompatible return value:
+expected builtins.int, got builtins.str&#x201D;.</p>
+<p>What just happened? We told MyPy that get_message returns an integer, but MyPy
+noticed that the return statement in get_message returns the result of a call to
+the &#x201C;input&#x201D; function, which always returns a string. (Since the input function
+is built in to Python, MyPy can look up its type on its own, and we don&#x2019;t need
+to write its type in our own code.)</p>
+<p>Here&#x2019;s where it gets really interesting. Go ahead and run this code with Python.
+You&#x2019;ll notice that nothing bad happens; in fact, this program acts exactly like
+the program from before. What&#x2019;s going on?</p>
+<p>Without wandering too deep into the dark forest of compiler theory, we can say
+that this happens because the <em>typechecking</em> stage and the <em>execution</em> stage
+occur separately. Typically this feature is a hallmark of compiled languages
+like C++ and Java, whereas interpreted languages like Python and Ruby do
+typechecking while the program is running (aptly named &#x201C;run-time typechecking&#x201D;),
+but there&#x2019;s no rule preventing us from typechecking a program in <em>any</em> language
+before running it!</p>
+<p>This is really important to understand: <strong>MyPy annotations don&#x2019;t affect your
+program while it&#x2019;s running. They only help you catch more bugs <em>before</em> runnning
+your code.</strong></p>
+<h2 id="a-slightly-better-example"><a href="#A-Slightly-Better-Example" class="headerlink" title="A Slightly Better Example"></a>A Slightly Better Example</h2><p>That was awesome, but at this point it all probably feels contrived, and you
+might be wondering why this is important. Or maybe you&#x2019;re convinced, but still
+a little uncertain about how to use MyPy in a more realistic scenario.</p>
+<p>Imagine that you wanted to get a user&#x2019;s favorite number. You might write code
+that looks something like this:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_favorite_number</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> input(<span class="string">&apos;Enter your favorite number: &apos;</span>)</span><br><span class="line"></span><br><span class="line">num = get_favorite_number()</span><br><span class="line">print(<span class="string">&apos;Your favorite number is&apos;</span>, num)</span><br></pre></td></tr></table></figure>
+<p>You can save and run this code, and it will work. But even though it doesn&#x2019;t
+crash, there&#x2019;s still a problem with it: get_favorite_number doesn&#x2019;t actually
+return a number! This is what we call a <strong>semantic</strong> problem: it isn&#x2019;t &#x201C;wrong&#x201D; in
+a technical sense, but it represents a mismatch between <em>your idea of what the
+code means</em> and <em>what the code actually means</em>.</p>
+<p>This distinction can be difficult to understand at first, so don&#x2019;t worry if it
+doesn&#x2019;t make sense yet. Just know that it makes more sense for a function that
+returns a number to, well, return an actual number. This will become apparent
+when we try to actually use the number in a &#x201C;number-y&#x201D; way:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_favorite_number</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> input(<span class="string">&apos;Enter your favorite number: &apos;</span>)</span><br><span class="line"></span><br><span class="line">num = get_favorite_number()</span><br><span class="line">print(<span class="string">&apos;Twice your favorite number is&apos;</span>, <span class="number">2</span>*num)</span><br></pre></td></tr></table></figure>
+<p>What happens when we run this code?</p>
+<p>Think about it and try to guess what will happen, and then go run the code and
+test your prediction.</p>
+<p>You&#x2019;ll notice that this code has some&#x2026; <em>interesting</em> behavior. Specifically,
+if you tell it that your favorite number is 5, it will tell you that twice your
+favorite number is 55. Which is technically true, as far as Python is concerned,
+but it&#x2019;s probably not what you meant.</p>
+<p><strong>This kind of bug&#x2013;where your program doesn&#x2019;t crash, but does something wrong
+and continues running&#x2013;is what static typecheckers like MyPy excel at finding.</strong></p>
+<p>&#x201C;Okay,&#x201D; you say, &#x201C;that&#x2019;s nice, but I would totally notice this as soon as I ran
+the program!&#x201D;. Yeah, you would, but what if it were part of a web form? You
+might not notice it until you realized that all the numbers in your database
+were numbers like 3131, 77, 101101, and 00. &#x201C;00&#x201D; would probably be the biggest
+red flag, since programming languages usually don&#x2019;t display leading zeros unless
+you explicitly ask for them. By this point, you might have gone days or weeks
+collecting wrong data.</p>
+<p>And yes, you could go through and fix this manually, but the point is to avoid
+problems like this in the first place. For example, you would have some very
+angry customers on your hands if you entered the price of a shirt as &#x201C;20&#x201D; and
+your website tried to charge them $2,020 to buy two shirts.</p>
+<p>Let&#x2019;s start fixing our code. First, let&#x2019;s formalize the idea that
+get_favorite_number should return an integer, by giving it a type annotation.
+(From now on, I&#x2019;m only going to reproduce the part of the code that changes.)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_favorite_number</span><span class="params">()</span> -&gt; <span class="title">int</span>:</span></span><br><span class="line">    <span class="keyword">return</span> input(<span class="string">&apos;Enter your favorite number: &apos;</span>)</span><br></pre></td></tr></table></figure>
+<p>Try running MyPy on this code. It should display the same error as it did with
+&#x201C;hello2.py&#x201D;: expected an integer, got a string.</p>
+<p>We have two choices: we can change the return type to <code>str</code>, or we can change
+the function body so it actually returns an <code>int</code>. We&#x2019;re going to do the latter,
+since it matches up with our goal.</p>
+<p>In Python, you can convert a string to an integer by wrapping it in the <code>int</code>
+constructor, so let&#x2019;s do that:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_favorite_number</span><span class="params">()</span> -&gt; <span class="title">int</span>:</span></span><br><span class="line">    <span class="keyword">return</span> int(input(<span class="string">&apos;Enter your favorite number: &apos;</span>))</span><br></pre></td></tr></table></figure>
+<p>Now, if we tell it our favorite number is 5, it actually prints 10. And the way
+our code is written matches up with our intuitive understanding of what it&#x2019;s
+supposed to do, which will make it much easier for other programmers (including
+our future selves) to read.</p>
+<p>Success!</p>
+<h1 id="digging-deeper"><a href="#Digging-Deeper" class="headerlink" title="Digging Deeper"></a>Digging Deeper</h1><p>We&#x2019;ll continue the saga of static typing in Python next time with Part 2 of this
+tutorial, in which we write our own class for array-backed lists and implement
+sorting with a custom predicate. Stay tuned, even if that sounds confusing!
+<em>Especially</em> if it sounds confusing.</p>
+<p>I&#x2019;ll also have something to say at some point about the unique properties of the
+<code>None</code> type, and how to take advantage of it when developing larger projects
+with MyPy.</p>
+<p>In the meanwhile, play around with MyPy on your own! Adding annotations to some
+previous code you&#x2019;ve written is a great way to build familiarity with the tool.
+(Just remember to make a copy of your files or check them into a git repository
+first!)</p>
+</div><!-- comment system--><div class="container"><hr></div></article><footer id="footer"><div class="container"><div class="bar"><div class="social"><a href="mailto:me@ashaindlin.com" target="_blank"><i class="fa fa-envelope-o"></i></a><a href="https://github.com/ashaindlin" target="_blank"><i class="fa fa-github"></i></a><a href="/atom.xml" target="_blank"><i class="fa fa-rss"></i></a></div><div class="footer">© 2016 <a href="/" rel="nofollow">λ</a>. Powered by <a rel="nofollow" target="_blank" href="https://hexo.io">Hexo</a>. Theme <a target="_blank" href="https://github.com/lotabout/very-simple">very-simple</a>.</div></div></div></footer><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+    $(".fancybox").fancybox();
+});</script></body></html>
