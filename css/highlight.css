@@ -130,6 +130,7 @@ pre .preprocessor,
 pre .built_in,
 pre .literal,
 pre .params,
+pre .special,
 pre .constant {
   color: #f99157; }
 
@@ -160,5 +161,6 @@ pre .coffeescript .title {
   color: #6699cc; }
 
 pre .keyword,
+pre .command,
 pre .javascript .function {
   color: #cc99cc; }
